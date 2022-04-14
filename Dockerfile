@@ -20,7 +20,7 @@ RUN apt-get update -yq && apt-get install -yq bash fonts-dejavu-core fonts-dejav
 WORKDIR /app
 
 # copy app from the offical image
-COPY --from=metabase/metabase:$METABASE_TAG /app /app
+COPY --from=metabase/metabase:${METABASE_TAG} /app /app
 
 RUN chown -R metabase /app
 
