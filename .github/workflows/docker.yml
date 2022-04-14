@@ -1,0 +1,42 @@
+# From https://medium.com/swlh/using-github-actions-to-build-arm-based-docker-images-413a8d498ee
+name: Docker Build/Publish Image
+on:
+  push:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    env:
+      DOCKER_REGISTRY: ghcr.io
+      DOCKER_IMAGE: ${{ github.repository_owner }}/metabase
+      DOCKER_USERNAME: ${{ github.repository_owner }}
+      DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
+      DOCKER_TARGET_PLATFORM: linux/arm/v8
+      METABASE_VERSION: v0.35.4
+    steps:
+    - name: Checkout the code
+      uses: actions/checkout@v1
+    - name: Set up Docker Buildx
+      uses: crazy-max/ghaction-docker-buildx@v1
+      with:
+        version: latest
+    - name: Prepare
+      if: success()
+      id: prepare
+      run: |
+        echo ::set-output name=docker_platform::${DOCKER_TARGET_PLATFORM}
+        echo ::set-output name=docker_image::${DOCKER_REGISTRY}/${DOCKER_IMAGE}
+        echo ::set-output name=version::${METABASE_VERSION}
+    - name: Docker Login
+      if: success()
+      run: |
+        echo "${DOCKER_PASSWORD}" | docker login ${DOCKER_REGISTRY} --username "${DOCKER_USERNAME}" --password-stdin
+    - name: Run Buildx (push image)
+      if: success()
+      run: |
+        docker buildx build \
+          --platform ${{ steps.prepare.outputs.docker_platform }} \
+          --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} \
+          --file ./Dockerfile \
+          --build-arg ${METABASE_VERSION} \
+          --output type=image,push=true .
