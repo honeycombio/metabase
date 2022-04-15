@@ -1,8 +1,7 @@
 # From https://medium.com/swlh/using-github-actions-to-build-arm-based-docker-images-413a8d498ee
 name: Docker Build/Publish Image
 on:
-  push:
-    branches: [ main ]
+  push
 jobs:
   build:
     runs-on: ubuntu-20.04
@@ -34,9 +33,15 @@ jobs:
     - name: Run Buildx (push image)
       if: success()
       run: |
+        if [[ "${GITHUB_REF##*/}" == "main" ]]; then
+          push=true
+        else
+          push=false
+        fi
+
         docker buildx build \
           --platform ${{ steps.prepare.outputs.docker_platform }} \
           --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} \
           --file ./Dockerfile \
           --build-arg ${METABASE_VERSION} \
-          --output type=image,push=true .
+          --output type=image,push=$push .
