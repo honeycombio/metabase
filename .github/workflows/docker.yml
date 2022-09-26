@@ -43,5 +43,5 @@ jobs:
           --platform ${{ steps.prepare.outputs.docker_platform }} \
           --tag ${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.version }} \
           --file ./Dockerfile \
-          --build-arg ${METABASE_VERSION} \
+          --build-arg METABASE_VERSION=${METABASE_VERSION} \
           --output type=image,push=$push .
