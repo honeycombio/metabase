@@ -11,7 +11,7 @@ jobs:
       DOCKER_USERNAME: ${{ github.repository_owner }}
       DOCKER_PASSWORD: ${{ secrets.GITHUB_TOKEN }}
       DOCKER_TARGET_PLATFORM: linux/arm/v8
-      METABASE_VERSION: v0.35.4
+      METABASE_VERSION: v0.44.3
     steps:
     - name: Checkout the code
       uses: actions/checkout@v1

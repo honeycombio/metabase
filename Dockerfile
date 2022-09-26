@@ -20,7 +20,7 @@ RUN apt-get update -yq && apt-get install -yq bash fonts-dejavu-core fonts-dejav
 WORKDIR /app
 
 # copy app from the offical image
-COPY --from=metabase/metabase:v0.35.4 /app /app
+COPY --from=metabase/metabase:v0.44.3 /app /app
 
 # Make sure the build-arg METABASE_VERSION matches what's in the COPY command
 # above, since we can't use build-args in a COPY command.
